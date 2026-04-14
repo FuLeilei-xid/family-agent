@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
+      <profile name="Annotation profile for family-life-agent" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../../../java/Maven/apache-maven-3.9.4-bin/apache-maven-3.9.4/mvn_repo/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
+        </processorPath>
+        <module name="family-life-agent-types" />
+        <module name="family-life-agent-infrastructure" />
+        <module name="family-life-agent-domain" />
+        <module name="family-life-agent-api" />
+        <module name="family-life-agent-trigger" />
+        <module name="family-life-agent-app" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="24" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="family-life-agent-api" options="-parameters" />
+      <module name="family-life-agent-app" options="-parameters" />
+      <module name="family-life-agent-domain" options="-parameters" />
+      <module name="family-life-agent-infrastructure" options="-parameters" />
+      <module name="family-life-agent-trigger" options="-parameters" />
+      <module name="family-life-agent-types" options="-parameters" />
+    </option>
+  </component>
+</project>

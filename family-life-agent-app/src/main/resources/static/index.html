@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家邻智选 - SSE 测试页</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: rgba(15, 23, 42, 0.78);
+            --panel-strong: #111c34;
+            --line: rgba(148, 163, 184, 0.22);
+            --text: #e5eefc;
+            --muted: #8ba3c7;
+            --accent: #f59e0b;
+            --accent-2: #38bdf8;
+            --user: #1d4ed8;
+            --assistant: #172554;
+            --shadow: 0 24px 80px rgba(15, 23, 42, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: var(--text);
+            background:
+                    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
+                    radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 28%),
+                    linear-gradient(135deg, #020617 0%, #0f172a 45%, #111827 100%);
+        }
+
+        .app {
+            width: min(920px, 100%);
+            height: min(760px, calc(100vh - 48px));
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            overflow: hidden;
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow);
+        }
+
+        .header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(90deg, rgba(23, 37, 84, 0.95), rgba(17, 24, 39, 0.82));
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .chat-box {
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background:
+                    linear-gradient(rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
+                    linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.28));
+        }
+
+        .message {
+            max-width: 78%;
+            padding: 14px 16px;
+            border-radius: 18px;
+            line-height: 1.7;
+            word-break: break-word;
+            white-space: pre-wrap;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            animation: riseIn 0.25s ease;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.98), rgba(29, 78, 216, 0.92));
+            border-bottom-right-radius: 6px;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background: linear-gradient(135deg, rgba(23, 37, 84, 0.95), rgba(15, 23, 42, 0.9));
+            border-bottom-left-radius: 6px;
+            position: relative;
+        }
+
+        .message.assistant.typing::after {
+            content: "";
+            display: inline-block;
+            width: 9px;
+            height: 18px;
+            margin-left: 4px;
+            vertical-align: -3px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: blink 0.9s infinite;
+        }
+
+        .placeholder {
+            align-self: center;
+            margin: auto 0;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .composer {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 14px;
+            padding: 18px 20px 20px;
+            border-top: 1px solid var(--line);
+            background: rgba(15, 23, 42, 0.92);
+        }
+
+        .input {
+            width: 100%;
+            min-height: 58px;
+            max-height: 140px;
+            resize: vertical;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            outline: none;
+            border-radius: 18px;
+            padding: 16px 18px;
+            font-size: 15px;
+            color: var(--text);
+            background: rgba(15, 23, 42, 0.75);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .input:focus {
+            border-color: rgba(56, 189, 248, 0.6);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+        }
+
+        .send-btn {
+            min-width: 128px;
+            border: none;
+            border-radius: 18px;
+            padding: 0 22px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #0f172a;
+            background: linear-gradient(135deg, var(--accent), #fde68a);
+            box-shadow: 0 12px 28px rgba(245, 158, 11, 0.28);
+            transition: transform 0.18s ease, opacity 0.18s ease;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes blink {
+            0%, 49% {
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .app {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .composer {
+                grid-template-columns: 1fr;
+            }
+
+            .send-btn {
+                min-height: 50px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <h1>家邻智选</h1>
+        <p>家庭本地生活智能体 · SSE 流式对话测试页</p>
+    </header>
+
+    <main class="chat-box" id="chatBox">
+        <div class="placeholder" id="placeholder">
+            请输入一段测试内容，例如：
+            <br>
+            今晚一家三口想在西湖附近吃饭，老人清淡，小孩想吃面，预算 100 元以内。
+        </div>
+    </main>
+
+    <footer class="composer">
+        <textarea id="messageInput" class="input" placeholder="请输入你的家庭就餐需求..." rows="2"></textarea>
+        <button id="sendBtn" class="send-btn">发送</button>
+    </footer>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chatBox');
+    const placeholder = document.getElementById('placeholder');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    let eventSource = null;
+    let typingQueue = [];
+    let typingTimer = null;
+    let currentAssistantBubble = null;
+
+    function removePlaceholder() {
+        if (placeholder) {
+            placeholder.remove();
+        }
+    }
+
+    function appendMessage(role, text) {
+        removePlaceholder();
+        const bubble = document.createElement('div');
+        bubble.className = `message ${role}`;
+        bubble.textContent = text || '';
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return bubble;
+    }
+
+    function createAssistantBubble() {
+        const bubble = appendMessage('assistant typing', '');
+        currentAssistantBubble = bubble;
+        return bubble;
+    }
+
+    function pushTypingText(text) {
+        if (!currentAssistantBubble) {
+            createAssistantBubble();
+        }
+
+        for (const char of text) {
+            typingQueue.push(char);
+        }
+
+        if (!typingTimer) {
+            typingTimer = setInterval(() => {
+                if (!typingQueue.length) {
+                    clearInterval(typingTimer);
+                    typingTimer = null;
+
+                    if (eventSource && eventSource.readyState === EventSource.CLOSED && currentAssistantBubble) {
+                        currentAssistantBubble.classList.remove('typing');
+                    }
+                    return;
+                }
+
+                currentAssistantBubble.textContent += typingQueue.shift();
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 35);
+        }
+    }
+
+    function finishAssistantBubble() {
+        if (currentAssistantBubble) {
+            const waitToFinish = () => {
+                if (typingQueue.length === 0 && !typingTimer) {
+                    currentAssistantBubble.classList.remove('typing');
+                    currentAssistantBubble = null;
+                    return;
+                }
+                setTimeout(waitToFinish, 80);
+            };
+            waitToFinish();
+        }
+    }
+
+    function closeStream() {
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+        }
+    }
+
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) {
+            messageInput.focus();
+            return;
+        }
+
+        closeStream();
+        typingQueue = [];
+        if (typingTimer) {
+            clearInterval(typingTimer);
+            typingTimer = null;
+        }
+        currentAssistantBubble = null;
+
+        appendMessage('user', message);
+        createAssistantBubble();
+
+        sendBtn.disabled = true;
+        messageInput.value = '';
+
+        const url = `/api/family/recommend/chat/stream?message=${encodeURIComponent(message)}`;
+        eventSource = new EventSource(url);
+
+        eventSource.addEventListener('message', (event) => {
+            const chunk = String(event.data || '');
+            pushTypingText(chunk + '\n');
+        });
+
+        eventSource.onerror = () => {
+            pushTypingText('\n[流式连接已结束或发生异常]');
+            finishAssistantBubble();
+            closeStream();
+            sendBtn.disabled = false;
+        };
+
+        eventSource.onopen = () => {
+            sendBtn.disabled = false;
+        };
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+    window.addEventListener('beforeunload', closeStream);
+</script>
+</body>
+</html>
