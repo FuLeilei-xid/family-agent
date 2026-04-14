@@ -1,10 +1,12 @@
 package com.familylifeagent.domain.prompt;
 
 import com.familylifeagent.api.dto.FamilyProfileDTO;
+import com.familylifeagent.api.dto.SessionContextDTO;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -12,7 +14,7 @@ public class FamilyAgentPromptTemplate {
 
     private static final String SYSTEM_PROMPT = """
             你是“家邻智选”，一个面向家庭本地生活决策的智能体。
-            你需要结合家庭画像、用户当前问题和工具返回结果，给出可信、简洁、可执行的推荐。
+            你需要结合家庭画像、用户当前问题、历史会话上下文和工具返回结果，给出可信、简洁、可执行的推荐。
 
             输出要求：
             1. 优先基于工具结果回答，不得编造店铺、优惠和营业信息。
@@ -31,10 +33,18 @@ public class FamilyAgentPromptTemplate {
             - 预算范围：{budgetRange}
             - 默认区域：{defaultArea}
             - 距离偏好：{distancePreference}
+
+            当前会话上下文：
+            - 会话ID：{sessionId}
+            - 当前意图：{currentIntent}
+            - 已识别槽位：{slots}
+            - 上轮候选店铺ID：{candidateShopIds}
+            - 上轮主推荐店铺ID：{lastRecommendShopId}
             """;
 
-    public String render(FamilyProfileDTO profileDTO) {
+    public String render(FamilyProfileDTO profileDTO, SessionContextDTO sessionContextDTO) {
         FamilyProfileDTO profile = profileDTO != null ? profileDTO : createDefaultProfile();
+        SessionContextDTO context = sessionContextDTO != null ? sessionContextDTO : createDefaultContext();
         Map<String, Object> variables = new HashMap<>();
         variables.put("userId", profile.getUserId());
         variables.put("familySize", profile.getFamilySize());
@@ -45,7 +55,12 @@ public class FamilyAgentPromptTemplate {
         variables.put("budgetRange", profile.getBudgetRange());
         variables.put("defaultArea", profile.getDefaultArea());
         variables.put("distancePreference", profile.getDistancePreference());
-        return new PromptTemplate(SYSTEM_PROMPT, variables).render();
+        variables.put("sessionId", context.getSessionId());
+        variables.put("currentIntent", context.getCurrentIntent());
+        variables.put("slots", context.getSlots());
+        variables.put("candidateShopIds", context.getCandidateShopIds());
+        variables.put("lastRecommendShopId", context.getLastRecommendShopId());
+        return new PromptTemplate(SYSTEM_PROMPT).render(variables);
     }
 
     private FamilyProfileDTO createDefaultProfile() {
@@ -60,5 +75,15 @@ public class FamilyAgentPromptTemplate {
         profile.setDefaultArea("西湖");
         profile.setDistancePreference("近");
         return profile;
+    }
+
+    private SessionContextDTO createDefaultContext() {
+        return SessionContextDTO.builder()
+                .sessionId("default-session")
+                .currentIntent("restaurant_recommendation")
+                .slots(Map.of())
+                .candidateShopIds(List.of())
+                .lastRecommendShopId(null)
+                .build();
     }
 }

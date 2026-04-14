@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>家邻智选 - SSE 测试页</title>
+    <title>家邻智选 - 家庭生活智能体</title>
     <style>
         :root {
             --bg: #0f172a;
@@ -38,9 +38,116 @@
                     linear-gradient(135deg, #020617 0%, #0f172a 45%, #111827 100%);
         }
 
+        /* 布局容器：左右分栏 */
+        .layout-container {
+            display: flex;
+            gap: 24px;
+            width: 100%;
+            max-width: 1200px;
+            height: min(780px, calc(100vh - 48px));
+        }
+
+        /* 左侧：家庭画像侧边栏 */
+        .sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-header {
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 16px;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: var(--accent-2);
+        }
+
+        .sidebar-header p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            accent-color: var(--accent-2);
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-save {
+            margin-top: auto;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent-2), #2563eb);
+            color: #fff;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* 右侧：主聊天容器 */
         .app {
-            width: min(920px, 100%);
-            height: min(760px, calc(100vh - 48px));
+            flex: 1;
             display: grid;
             grid-template-rows: auto 1fr auto;
             border: 1px solid var(--line);
@@ -61,7 +168,6 @@
             margin: 0;
             font-size: 24px;
             font-weight: 700;
-            letter-spacing: 1px;
         }
 
         .header p {
@@ -76,20 +182,23 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            background:
-                    linear-gradient(rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
-                    linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.28));
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.28));
         }
 
         .message {
-            max-width: 78%;
+            max-width: 85%;
             padding: 14px 16px;
             border-radius: 18px;
             line-height: 1.7;
-            word-break: break-word;
             white-space: pre-wrap;
+            word-break: break-word;
             border: 1px solid rgba(255, 255, 255, 0.06);
             animation: riseIn 0.25s ease;
+        }
+
+        .message-content {
+            display: inline;
+            white-space: inherit;
         }
 
         .message.user {
@@ -115,6 +224,47 @@
             background: var(--accent);
             border-radius: 2px;
             animation: blink 0.9s infinite;
+        }
+
+        /* 店铺结构化卡片样式 */
+        .shop-card {
+            margin: 12px 0;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .shop-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(56, 189, 248, 0.6);
+        }
+
+        .shop-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 6px;
+        }
+
+        .shop-details {
+            margin: 0;
+            padding-left: 20px;
+            color: #d1d5db;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .shop-details li {
+            margin-bottom: 4px;
+        }
+
+        strong {
+            color: var(--accent-2);
         }
 
         .placeholder {
@@ -146,7 +296,7 @@
             font-size: 15px;
             color: var(--text);
             background: rgba(15, 23, 42, 0.75);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .input:focus {
@@ -158,14 +308,13 @@
             min-width: 128px;
             border: none;
             border-radius: 18px;
-            padding: 0 22px;
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             color: #0f172a;
             background: linear-gradient(135deg, var(--accent), #fde68a);
             box-shadow: 0 12px 28px rgba(245, 158, 11, 0.28);
-            transition: transform 0.18s ease, opacity 0.18s ease;
+            transition: all 0.18s ease;
         }
 
         .send-btn:hover {
@@ -179,72 +328,127 @@
         }
 
         @keyframes blink {
-            0%, 49% {
-                opacity: 1;
-            }
-            50%, 100% {
-                opacity: 0;
-            }
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
         }
 
         @keyframes riseIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 0;
-            }
-
-            .app {
-                width: 100%;
-                height: 100vh;
-                border-radius: 0;
-            }
-
-            .composer {
-                grid-template-columns: 1fr;
-            }
-
-            .send-btn {
-                min-height: 50px;
-            }
-
-            .message {
-                max-width: 90%;
-            }
+        /* 响应式调整 */
+        @media (max-width: 900px) {
+            .layout-container { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; }
+            .app { height: 70vh; }
         }
     </style>
 </head>
 <body>
-<div class="app">
-    <header class="header">
-        <h1>家邻智选</h1>
-        <p>家庭本地生活智能体 · SSE 流式对话测试页</p>
-    </header>
 
-    <main class="chat-box" id="chatBox">
-        <div class="placeholder" id="placeholder">
-            请输入一段测试内容，例如：
-            <br>
-            今晚一家三口想在西湖附近吃饭，老人清淡，小孩想吃面，预算 100 元以内。
+<div class="layout-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>家庭画像设定</h2>
+            <p>为 Agent 注入家庭约束条件</p>
         </div>
-    </main>
 
-    <footer class="composer">
-        <textarea id="messageInput" class="input" placeholder="请输入你的家庭就餐需求..." rows="2"></textarea>
-        <button id="sendBtn" class="send-btn">发送</button>
-    </footer>
+        <div class="form-group">
+            <label for="familySize">家庭用餐人数</label>
+            <select id="familySize" class="form-control">
+                <option value="2">2 人</option>
+                <option value="3" selected>3 人 (一家三口)</option>
+                <option value="4">4 人</option>
+                <option value="5">5 人及以上 (聚餐)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>家庭成员包含</label>
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="hasElderly" checked> 老人 (清淡)
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="hasChild" checked> 儿童 (无辣/游乐)
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="budgetRange">期望人均预算 (元)</label>
+            <input type="text" id="budgetRange" class="form-control" value="80-150" placeholder="例如: 100以内">
+        </div>
+
+        <button id="saveProfileBtn" class="btn-save">保存当前画像</button>
+    </aside>
+
+    <div class="app">
+        <header class="header">
+            <h1>家邻智选</h1>
+            <p>基于 Spring AI + SSE 的本地生活执行智能体</p>
+        </header>
+
+        <main class="chat-box" id="chatBox">
+            <div class="placeholder" id="placeholder">
+                左侧设置好家庭条件后，在此输入您的需求<br>
+                例如：今晚想在西湖附近吃饭，找一家评分高的店。
+            </div>
+        </main>
+
+        <footer class="composer">
+            <textarea id="messageInput" class="input" placeholder="请输入您的家庭就餐需求或追问..." rows="2"></textarea>
+            <button id="sendBtn" class="send-btn">发送需求</button>
+        </footer>
+    </div>
 </div>
 
 <script>
+    // ==========================================
+    // 1. 家庭画像表单逻辑
+    // ==========================================
+    document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveProfileBtn');
+        const profileData = {
+            userId: 1001, // 模拟当前用户
+            familySize: parseInt(document.getElementById('familySize').value),
+            hasElderly: document.getElementById('hasElderly').checked,
+            hasChild: document.getElementById('hasChild').checked,
+            budgetRange: document.getElementById('budgetRange').value
+        };
+
+        btn.textContent = '正在同步至 Agent...';
+        btn.style.opacity = '0.8';
+
+        try {
+            // 真实联调时放开此注释
+
+        await fetch('/api/family/profile/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profileData)
+        });
+
+            // 模拟延迟
+            await new Promise(r => setTimeout(r, 600));
+
+            btn.textContent = '画像已保存 ✓';
+            btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            setTimeout(() => {
+                btn.textContent = '保存当前画像';
+                btn.style.background = '';
+                btn.style.opacity = '1';
+            }, 2000);
+        } catch (error) {
+            btn.textContent = '保存失败';
+            console.error('保存画像失败:', error);
+        }
+    });
+
+    // ==========================================
+    // 2. 对话与流式渲染逻辑
+    // ==========================================
     const chatBox = document.getElementById('chatBox');
     const placeholder = document.getElementById('placeholder');
     const messageInput = document.getElementById('messageInput');
@@ -254,35 +458,82 @@
     let typingQueue = [];
     let typingTimer = null;
     let currentAssistantBubble = null;
+    let currentAssistantContent = null;
+    let streamClosed = false;
+    let fullRawText = ""; // 记录完整的原始文本，用于后续正则解析
 
     function removePlaceholder() {
-        if (placeholder) {
-            placeholder.remove();
-        }
+        if (placeholder) placeholder.remove();
     }
 
     function appendMessage(role, text) {
         removePlaceholder();
         const bubble = document.createElement('div');
         bubble.className = `message ${role}`;
-        bubble.textContent = text || '';
+
+        const content = document.createElement('span');
+        content.className = 'message-content';
+        content.textContent = text || '';
+        bubble.appendChild(content);
+
         chatBox.appendChild(bubble);
         chatBox.scrollTop = chatBox.scrollHeight;
-        return bubble;
+        return { bubble, content };
     }
 
     function createAssistantBubble() {
-        const bubble = appendMessage('assistant typing', '');
+        fullRawText = "";
+        const { bubble, content } = appendMessage('assistant typing', '');
         currentAssistantBubble = bubble;
+        currentAssistantContent = content;
         return bubble;
     }
 
+    // 将普通文本中的特定格式转换为 HTML 结构化卡片
+    function formatMarkdownToCards(rawText) {
+        let html = rawText.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 基础防注入
+
+        // 处理加粗 **文字**
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // 核心解析器：寻找标准 Markdown 格式的店铺信息
+        // 匹配格式例如：
+        // ### 外婆家 (西湖店)
+        // - 评分：4.8
+        // - 人均：80元
+        const shopRegex = /###\s*([^\n]+)((?:\n\s*-\s*[^\n]+)+)/g;
+        html = html.replace(shopRegex, (match, shopName, listText) => {
+            // 将列表项 `- xxx` 转为 <li>xxx</li>
+            const listItems = listText.trim().split('\n').map(line => {
+                const itemStr = line.replace(/^\s*-\s*/, '').trim();
+                return `<li>${itemStr}</li>`;
+            }).join('');
+
+            // 组装成为带样式的 HTML 卡片
+            return `
+            <div class="shop-card">
+                <div class="shop-title">🏪 ${shopName.trim()}</div>
+                <ul class="shop-details">${listItems}</ul>
+            </div>`;
+        });
+
+        // 将剩余的普通换行符替换为 <br>
+        // 注意：因为 pre-wrap 也会换行，但一旦替换为 innerHTML 就需要用 <br> 或包裹在 p 标签里
+        html = html.replace(/\n/g, '<br>');
+
+        return html;
+    }
+
     function pushTypingText(text) {
-        if (!currentAssistantBubble) {
+        if (!currentAssistantBubble || !currentAssistantContent) {
             createAssistantBubble();
         }
 
-        for (const char of text) {
+        // 去除可能的空字符
+        const normalized = String(text || '').replace(/\r/g, '').replace(/\u0000/g, '');
+        fullRawText += normalized; // 收集完整文本
+
+        for (const char of normalized) {
             typingQueue.push(char);
         }
 
@@ -292,27 +543,37 @@
                     clearInterval(typingTimer);
                     typingTimer = null;
 
-                    if (eventSource && eventSource.readyState === EventSource.CLOSED && currentAssistantBubble) {
+                    if (streamClosed && currentAssistantBubble) {
                         currentAssistantBubble.classList.remove('typing');
+                        // ====== 关键修改点：流输出结束后，触发卡片重绘 ======
+                        // 将收集到的完整纯文本交由正则函数处理，渲染出精美的店铺卡片
+                        currentAssistantContent.innerHTML = formatMarkdownToCards(fullRawText);
+                        chatBox.scrollTop = chatBox.scrollHeight;
                     }
                     return;
                 }
 
-                currentAssistantBubble.textContent += typingQueue.shift();
+                currentAssistantContent.textContent += typingQueue.shift();
                 chatBox.scrollTop = chatBox.scrollHeight;
-            }, 35);
+            }, 20);
         }
     }
 
     function finishAssistantBubble() {
+        streamClosed = true;
         if (currentAssistantBubble) {
             const waitToFinish = () => {
                 if (typingQueue.length === 0 && !typingTimer) {
                     currentAssistantBubble.classList.remove('typing');
+                    // 同样在正常结束时触发渲染
+                    currentAssistantContent.innerHTML = formatMarkdownToCards(fullRawText);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+
                     currentAssistantBubble = null;
+                    currentAssistantContent = null;
                     return;
                 }
-                setTimeout(waitToFinish, 80);
+                setTimeout(waitToFinish, 60);
             };
             waitToFinish();
         }
@@ -323,6 +584,7 @@
             eventSource.close();
             eventSource = null;
         }
+        streamClosed = true;
     }
 
     function sendMessage() {
@@ -339,6 +601,8 @@
             typingTimer = null;
         }
         currentAssistantBubble = null;
+        currentAssistantContent = null;
+        streamClosed = false;
 
         appendMessage('user', message);
         createAssistantBubble();
@@ -346,19 +610,18 @@
         sendBtn.disabled = true;
         messageInput.value = '';
 
+        // 拼接请求 URL
         const url = `/api/family/recommend/chat/stream?message=${encodeURIComponent(message)}`;
         eventSource = new EventSource(url);
 
         eventSource.addEventListener('message', (event) => {
-            const chunk = String(event.data || '');
-            pushTypingText(chunk + '\n');
+            pushTypingText(event.data);
         });
 
         eventSource.onerror = () => {
-            pushTypingText('\n[流式连接已结束或发生异常]');
-            finishAssistantBubble();
             closeStream();
             sendBtn.disabled = false;
+            finishAssistantBubble();
         };
 
         eventSource.onopen = () => {
@@ -367,7 +630,6 @@
     }
 
     sendBtn.addEventListener('click', sendMessage);
-
     messageInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();

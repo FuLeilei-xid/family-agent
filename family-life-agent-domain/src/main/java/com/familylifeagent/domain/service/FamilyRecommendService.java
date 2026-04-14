@@ -1,6 +1,7 @@
 package com.familylifeagent.domain.service;
 
 import com.familylifeagent.api.dto.FamilyProfileDTO;
+import com.familylifeagent.api.dto.SessionContextDTO;
 import com.familylifeagent.domain.prompt.FamilyAgentPromptTemplate;
 import com.familylifeagent.infrastructure.tool.ShopSearchTool;
 import org.springframework.ai.chat.client.ChatClient;
@@ -22,8 +23,8 @@ public class FamilyRecommendService {
         this.shopSearchTool = shopSearchTool;
     }
 
-    public String recommendOnce(String message, FamilyProfileDTO profileDTO) {
-        String systemPrompt = promptTemplate.render(profileDTO);
+    public String recommendOnce(String message, FamilyProfileDTO profileDTO, SessionContextDTO sessionContextDTO) {
+        String systemPrompt = promptTemplate.render(profileDTO, sessionContextDTO);
         return familyChatClient.prompt()
                 .system(systemPrompt)
                 .user(message)
@@ -32,8 +33,8 @@ public class FamilyRecommendService {
                 .content();
     }
 
-    public Flux<String> recommendStream(String message, FamilyProfileDTO profileDTO) {
-        String systemPrompt = promptTemplate.render(profileDTO);
+    public Flux<String> recommendStream(String message, FamilyProfileDTO profileDTO, SessionContextDTO sessionContextDTO) {
+        String systemPrompt = promptTemplate.render(profileDTO, sessionContextDTO);
         return familyChatClient.prompt()
                 .system(systemPrompt)
                 .user(message)

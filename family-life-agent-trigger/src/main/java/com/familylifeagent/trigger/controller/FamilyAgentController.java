@@ -1,7 +1,10 @@
 package com.familylifeagent.trigger.controller;
 
 import com.familylifeagent.api.dto.FamilyProfileDTO;
+import com.familylifeagent.api.dto.SessionContextDTO;
+import com.familylifeagent.domain.service.FamilyProfileService;
 import com.familylifeagent.domain.service.FamilyRecommendService;
+import com.familylifeagent.domain.service.SessionContextService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,29 +17,38 @@ import reactor.core.Disposable;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/family")
 public class FamilyAgentController {
 
     private final FamilyRecommendService familyRecommendService;
+    private final FamilyProfileService familyProfileService;
+    private final SessionContextService sessionContextService;
 
-    public FamilyAgentController(FamilyRecommendService familyRecommendService) {
+    public FamilyAgentController(FamilyRecommendService familyRecommendService,
+                                 FamilyProfileService familyProfileService,
+                                 SessionContextService sessionContextService) {
         this.familyRecommendService = familyRecommendService;
+        this.familyProfileService = familyProfileService;
+        this.sessionContextService = sessionContextService;
     }
 
     @PostMapping("/profile/save")
     public Map<String, Object> saveProfile(@RequestBody FamilyProfileDTO familyProfileDTO) {
+        FamilyProfileDTO saved = familyProfileService.save(familyProfileDTO);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("message", "家庭画像保存成功");
-        result.put("data", familyProfileDTO);
+        result.put("data", saved);
         return result;
     }
 
     @GetMapping("/profile/query")
     public FamilyProfileDTO queryProfile(@RequestParam(value = "userId", required = false) Long userId) {
-        return defaultProfile(userId);
+        return familyProfileService.queryOrDefault(userId != null ? userId : 1001L);
     }
 
     @PostMapping("/recommend/chat")
@@ -44,26 +56,47 @@ public class FamilyAgentController {
         String message = request != null && request.get("message") != null
                 ? String.valueOf(request.get("message"))
                 : "请为一家三口推荐西湖附近适合老人和孩子的晚餐。";
+        Long userId = request != null && request.get("userId") != null
+                ? Long.valueOf(String.valueOf(request.get("userId")))
+                : 1001L;
+        String sessionId = request != null && request.get("sessionId") != null
+                ? String.valueOf(request.get("sessionId"))
+                : UUID.randomUUID().toString();
 
-        String reply = familyRecommendService.recommendOnce(message, defaultProfile(1001L));
+        FamilyProfileDTO profile = familyProfileService.queryOrDefault(userId);
+        SessionContextDTO context = sessionContextService.updateForQuestion(sessionId, message);
+        String reply = familyRecommendService.recommendOnce(message, profile, context);
+        sessionContextService.refreshCandidates(sessionId, List.of(1L, 2L, 3L));
+
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("sessionId", "ai-session-001");
+        result.put("sessionId", sessionId);
         result.put("reply", reply);
+        result.put("context", context);
         return result;
     }
 
     @GetMapping(path = "/recommend/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter recommendChatStream(@RequestParam(value = "message", required = false) String message) {
+    public SseEmitter recommendChatStream(@RequestParam(value = "message", required = false) String message,
+                                          @RequestParam(value = "userId", required = false) Long userId,
+                                          @RequestParam(value = "sessionId", required = false) String sessionId) {
         SseEmitter emitter = new SseEmitter(0L);
         String prompt = message != null && !message.isBlank()
                 ? message
                 : "今晚一家三口想在西湖附近吃饭，老人清淡，小孩想吃面，预算100元以内。";
+        Long resolvedUserId = userId != null ? userId : 1001L;
+        String resolvedSessionId = sessionId != null && !sessionId.isBlank() ? sessionId : UUID.randomUUID().toString();
 
-        Disposable disposable = familyRecommendService.recommendStream(prompt, defaultProfile(1001L))
+        FamilyProfileDTO profile = familyProfileService.queryOrDefault(resolvedUserId);
+        SessionContextDTO context = sessionContextService.updateForQuestion(resolvedSessionId, prompt);
+
+        Disposable disposable = familyRecommendService.recommendStream(prompt, profile, context)
                 .subscribe(
                         chunk -> sendChunk(emitter, chunk),
                         emitter::completeWithError,
-                        emitter::complete
+                        () -> {
+                            sessionContextService.refreshCandidates(resolvedSessionId, List.of(1L, 2L, 3L));
+                            emitter.complete();
+                        }
                 );
 
         emitter.onCompletion(disposable::dispose);
@@ -81,19 +114,5 @@ public class FamilyAgentController {
         } catch (IOException e) {
             emitter.completeWithError(e);
         }
-    }
-
-    private FamilyProfileDTO defaultProfile(Long userId) {
-        FamilyProfileDTO profile = new FamilyProfileDTO();
-        profile.setUserId(userId != null ? userId : 1001L);
-        profile.setFamilySize(3);
-        profile.setHasElderly(Boolean.TRUE);
-        profile.setHasChild(Boolean.TRUE);
-        profile.setElderlyPreference("清淡");
-        profile.setChildPreference("面食");
-        profile.setBudgetRange("50-120");
-        profile.setDefaultArea("西湖");
-        profile.setDistancePreference("近");
-        return profile;
     }
 }

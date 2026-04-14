@@ -1,2 +1,15 @@
 server:
   port: 9090
+
+spring:
+  ai:
+    openai:
+      api-key: sk-qTa7Ed0uB1tWuNjp84A348A7D185454eA97bFf2e4d7718Fc
+      base-url: https://apis.itedus.cn
+      chat:
+        completions-path: /v1/chat/completions
+        options:
+          model: gpt-4.1
+          temperature: 0.7
+      embedding:
+        embeddings-path: /v1/embeddings
