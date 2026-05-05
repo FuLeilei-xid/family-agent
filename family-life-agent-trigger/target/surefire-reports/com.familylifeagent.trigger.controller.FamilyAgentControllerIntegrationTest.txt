@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.familylifeagent.trigger.controller.FamilyAgentControllerIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.062 s -- in com.familylifeagent.trigger.controller.FamilyAgentControllerIntegrationTest

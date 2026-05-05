@@ -26,7 +26,7 @@ spring:
 #          temperature: 0.7
 #      embedding:
 #        embeddings-path: /v1/embeddings
-      api-key: sk-cb2bc52d0c96470b8d7454ec52b7a4eb
+      api-key:
       base-url: https://api.deepseek.com
       chat:
         completions-path: /v1/chat/completions
