@@ -176,6 +176,38 @@
             font-size: 14px;
         }
 
+        /* 演示预设问题快捷按钮 */
+        .preset-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .preset-btn {
+            padding: 6px 14px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 20px;
+            background: rgba(56, 189, 248, 0.08);
+            color: var(--accent-2);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .preset-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent-2);
+            transform: translateY(-1px);
+        }
+
+        .preset-btn:active {
+            transform: translateY(0);
+        }
+
         .chat-box {
             padding: 24px;
             overflow-y: auto;
@@ -381,6 +413,16 @@
             <input type="text" id="budgetRange" class="form-control" value="80-150" placeholder="例如: 100以内">
         </div>
 
+        <div class="form-group">
+            <label for="defaultArea">默认区域</label>
+            <input type="text" id="defaultArea" class="form-control" value="西湖" placeholder="例如: 西湖、滨江">
+        </div>
+
+        <div class="form-group">
+            <label for="distancePreference">距离偏好</label>
+            <input type="text" id="distancePreference" class="form-control" value="近" placeholder="例如: 近、无所谓">
+        </div>
+
         <button id="saveProfileBtn" class="btn-save">保存当前画像</button>
     </aside>
 
@@ -389,6 +431,16 @@
             <h1>家邻智选</h1>
             <p>基于 Spring AI + SSE 的本地生活执行智能体</p>
         </header>
+
+        <!-- 演示预设问题快捷入口 -->
+        <div class="preset-bar" id="presetBar">
+            <button class="preset-btn" data-msg="今晚一家三口在西湖附近吃饭，老人清淡，小孩想吃面，预算100以内，找一家近一点的店">今晚家庭晚餐</button>
+            <button class="preset-btn" data-msg="我家有老人不能吃辣，有小孩爱吃面，西湖附近有什么适合的餐厅？">老人小孩优先</button>
+            <button class="preset-btn" data-msg="第二家店营业到几点？有优惠券吗？">追问详情优惠</button>
+            <button class="preset-btn" data-msg="换成明天中午，找适合带孩子的">换时间重推</button>
+            <button class="preset-btn" data-msg="附近有游戏厅吗？孩子想去玩">切换游戏厅</button>
+            <button class="preset-btn" data-msg="先买件衣服，然后去吃饭">多任务串联</button>
+        </div>
 
         <main class="chat-box" id="chatBox">
             <div class="placeholder" id="placeholder">
@@ -415,7 +467,9 @@
             familySize: parseInt(document.getElementById('familySize').value),
             hasElderly: document.getElementById('hasElderly').checked,
             hasChild: document.getElementById('hasChild').checked,
-            budgetRange: document.getElementById('budgetRange').value
+            budgetRange: document.getElementById('budgetRange').value,
+            defaultArea: document.getElementById('defaultArea').value,
+            distancePreference: document.getElementById('distancePreference').value
         };
 
         btn.textContent = '正在同步至 Agent...';
@@ -455,6 +509,9 @@
     const sendBtn = document.getElementById('sendBtn');
 
     let eventSource = null;
+    let currentSessionId = window.crypto && window.crypto.randomUUID
+        ? window.crypto.randomUUID()
+        : `family-session-${Date.now()}`;
     let typingQueue = [];
     let typingTimer = null;
     let currentAssistantBubble = null;
@@ -611,7 +668,7 @@
         messageInput.value = '';
 
         // 拼接请求 URL
-        const url = `/api/family/recommend/chat/stream?message=${encodeURIComponent(message)}`;
+        const url = `/api/family/recommend/chat/stream?message=${encodeURIComponent(message)}&sessionId=${encodeURIComponent(currentSessionId)}`;
         eventSource = new EventSource(url);
 
         eventSource.addEventListener('message', (event) => {
@@ -636,6 +693,45 @@
             sendMessage();
         }
     });
+
+    // ==========================================
+    // 3. 演示预设问题按钮逻辑
+    // ==========================================
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const msg = btn.getAttribute('data-msg');
+            if (msg) {
+                messageInput.value = msg;
+                sendMessage();
+            }
+        });
+    });
+
+    // ==========================================
+    // 4. 页面加载时从后端加载已保存的家庭画像
+    // ==========================================
+    async function loadSavedProfile() {
+        try {
+            const resp = await fetch('/api/family/profile/query?userId=1001');
+            if (resp.ok) {
+                const profile = await resp.json();
+                if (profile) {
+                    document.getElementById('familySize').value = profile.familySize || 3;
+                    document.getElementById('hasElderly').checked = !!profile.hasElderly;
+                    document.getElementById('hasChild').checked = !!profile.hasChild;
+                    if (profile.budgetRange) document.getElementById('budgetRange').value = profile.budgetRange;
+                    if (profile.defaultArea) document.getElementById('defaultArea').value = profile.defaultArea;
+                    if (profile.distancePreference) document.getElementById('distancePreference').value = profile.distancePreference;
+                    console.log('已加载已保存的家庭画像');
+                }
+            }
+        } catch (error) {
+            console.log('未找到已保存的画像，使用默认值', error);
+        }
+    }
+
+    // 页面加载后立即加载画像
+    loadSavedProfile();
 
     window.addEventListener('beforeunload', closeStream);
 </script>

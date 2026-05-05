@@ -1,0 +1,4 @@
+com\familylifeagent\domain\prompt\FamilyAgentPromptTemplateSecurityTest.class
+com\familylifeagent\domain\service\SessionContextMultiTurnTest.class
+com\familylifeagent\domain\service\FamilyProfileServiceTest.class
+com\familylifeagent\domain\service\SessionContextIntentEnhancementTest.class

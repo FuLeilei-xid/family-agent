@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.familylifeagent.infrastructure.memory.MemoryConsolidatorTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s -- in com.familylifeagent.infrastructure.memory.MemoryConsolidatorTest

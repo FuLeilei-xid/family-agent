@@ -1,0 +1,9 @@
+com\familylifeagent\domain\service\ShopRecommendationService.class
+com\familylifeagent\domain\prompt\FamilyAgentPromptTemplate.class
+com\familylifeagent\domain\service\SessionContextService$LlmIntentResult.class
+com\familylifeagent\domain\service\FamilyRecommendService.class
+com\familylifeagent\domain\service\ShopRecommendationService$ScoredShop.class
+com\familylifeagent\domain\service\FamilyMemoryService.class
+com\familylifeagent\domain\service\SessionContextService$1.class
+com\familylifeagent\domain\service\SessionContextService.class
+com\familylifeagent\domain\service\FamilyProfileService.class

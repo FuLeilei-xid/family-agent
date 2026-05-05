@@ -1,0 +1,6 @@
+com\familylifeagent\api\dto\FamilyProfileDTO.class
+com\familylifeagent\api\dto\SessionContextDTO$TaskDTO$TaskDTOBuilder.class
+com\familylifeagent\api\dto\SessionContextDTO$TaskDTO.class
+com\familylifeagent\api\dto\SessionContextDTO$SessionContextDTOBuilder.class
+com\familylifeagent\api\dto\FamilyProfileDTO$FamilyProfileDTOBuilder.class
+com\familylifeagent\api\dto\SessionContextDTO.class

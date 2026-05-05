@@ -1,15 +1,39 @@
 server:
-  port: 9090
+  port: 9091
 
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/family-agent?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 1234
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:500_shops.sql
+  jpa:
+    open-in-view: false
+    defer-datasource-initialization: true
   ai:
     openai:
-      api-key: sk-qTa7Ed0uB1tWuNjp84A348A7D185454eA97bFf2e4d7718Fc
-      base-url: https://apis.itedus.cn
+#      api-key: sk-ZB7Ab54olKymbwimB2D054B3Be224d7eB64e023cC2F54218
+#      base-url: https://apis.itedus.cn
+#      chat:
+#        completions-path: /v1/chat/completions
+#        options:
+#          model: gpt-4.1
+#          temperature: 0.7
+#      embedding:
+#        embeddings-path: /v1/embeddings
+      api-key: sk-cb2bc52d0c96470b8d7454ec52b7a4eb
+      base-url: https://api.deepseek.com
       chat:
         completions-path: /v1/chat/completions
         options:
-          model: gpt-4.1
+          model: deepseek-chat
           temperature: 0.7
       embedding:
-        embeddings-path: /v1/embeddings
+        embeddings-path: /v1/embeddings  # 保持不变
+        options:
+          model: deepseek-embed      # 替换为DeepSeek嵌入模型

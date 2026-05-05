@@ -1,0 +1,15 @@
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\config\FamilyAiConfig.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\entity\ReservationEntity.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\entity\ShopDetailEntity.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\entity\ShopEntity.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\entity\ShopTypeEntity.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\entity\VoucherEntity.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\memory\FamilyMemoryStore.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\memory\MemoryConsolidator.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\memory\MemoryEntry.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\repository\ReservationRepository.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\repository\ShopRepository.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\repository\VoucherRepository.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\service\LocalLifeSemanticRagService.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\tool\ShopActionTool.java
+E:\ZTE\progect\family-life-agent\family-agent\family-life-agent-infrastructure\src\main\java\com\familylifeagent\infrastructure\tool\ShopSearchTool.java

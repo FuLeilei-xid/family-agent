@@ -1,0 +1,3 @@
+com\familylifeagent\trigger\controller\FamilyMemoryController.class
+com\familylifeagent\trigger\controller\FamilyAgentController.class
+com\familylifeagent\trigger\controller\GlobalExceptionHandler.class

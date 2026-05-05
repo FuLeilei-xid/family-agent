@@ -20,7 +20,26 @@ public class SessionContextDTO {
 
     private Map<String, Object> slots;
 
+    private Map<String, Object> currentSlots;
+
+    private List<TaskDTO> pendingTasks;
+
     private List<Long> candidateShopIds;
 
+    private Map<Long, String> candidateShopMap;
+
     private Long lastRecommendShopId;
+
+    private String ragHint;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TaskDTO {
+        private String taskId;
+        private String shopType;
+        private String taskName;
+        private String status;
+    }
 }

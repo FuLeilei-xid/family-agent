@@ -1,0 +1,4 @@
+com\familylifeagent\infrastructure\tool\MockShopSearchTool.class
+com\familylifeagent\infrastructure\memory\MemoryConsolidatorTest.class
+com\familylifeagent\infrastructure\tool\ShopSearchToolTest.class
+com\familylifeagent\infrastructure\memory\FamilyMemoryStoreTest.class
